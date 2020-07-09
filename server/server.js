@@ -56,7 +56,8 @@ app.post('/lights', function (req, res) {
       .send(error);
   }
 
-  return res.status(200);
+  return res.status(200)
+    .send("OK");
 });
 
 app.post('/lights/toggle', function (req, res) {
@@ -78,7 +79,8 @@ app.post('/lights/toggle', function (req, res) {
       .send(error);
   }
 
-  return res.status(200);
+  return res.status(200)
+    .send("OK");
 });
 
 app.get('/lights', function (req, res) {
