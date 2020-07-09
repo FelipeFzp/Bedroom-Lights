@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cron = require('node-cron');
 var fs = require('fs');
-var moment = require('moment');
+var moment = require('moment-timezone');
 
 var app = express();
 const DB_FILE_PATH = './db/state.json';
@@ -89,7 +89,6 @@ app.post('/lights/toggle', function (req, res) {
 });
 
 app.get('/lights', function (req, res) {
-  const { daysOfWeek, time } = req.body;
 
   try {
     let file = getDbFile();
@@ -102,17 +101,28 @@ app.get('/lights', function (req, res) {
   }
 });
 
+app.get('/test', function (req, res) {
+
+
+});
+
 // Crons
 cron.schedule('* * * * *', () => {
-  const dayOfWeek = moment().locale('pt').format('ddd').toUpperCase();
-  const time = moment().format('HH:mm');
-
-  const file = getDbFile();
-  if (file && file.daysOfWeek && file.turnOnTime) {
-    if (file.daysOfWeek.find(d => d == dayOfWeek) && file.turnOnTime == time) {
-      file.state = 'full';
-      updateDbFile(file);
+  try {
+    const momentDate = moment().tz('America/Sao_Paulo').locale('pt');
+    const dayOfWeek = momentDate.format('ddd').toUpperCase();
+    const time = momentDate.format('HH:mm');  
+    
+    const file = getDbFile();
+    if (file && file.daysOfWeek && file.turnOnTime) {
+      if (file.daysOfWeek.find(d => d == dayOfWeek) && file.turnOnTime == time) {
+        file.state = 'full';
+        updateDbFile(file);
+      }
     }
+  }
+  catch (error) {
+    console.log(error);
   }
 })
 
