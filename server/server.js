@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cron = require('node-cron');
 var fs = require('fs');
+var moment = require('moment');
 
 var app = express();
 const DB_FILE_PATH = './lightsState.json';
@@ -9,11 +11,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
+
+// Database File Methods
 function getDbFile() {
   let fileData = fs.readFileSync(DB_FILE_PATH).toString();
   let file = JSON.parse(fileData);
@@ -41,6 +45,7 @@ function updateDbFile(data) {
   }
 }
 
+// Endpoints
 app.post('/lights', function (req, res) {
   const { state, daysOfWeek, turnOnTime } = req.body;
 
@@ -97,6 +102,21 @@ app.get('/lights', function (req, res) {
   }
 });
 
+// Crons
+cron.schedule('* * * * *', () => {
+  const dayOfWeek = moment().locale('pt').format('ddd').toUpperCase();
+  const time = moment().format('HH:mm');
+
+  const file = getDbFile();
+  if (file && file.daysOfWeek && file.turnOnTime) {
+    if (file.daysOfWeek.find(d => d == dayOfWeek) && file.turnOnTime == time) {
+      file.state = 'full';
+      updateDbFile(file);
+    }
+  }
+})
+
+// Start
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+  console.log('Felipe\'s Bedroom api listening on port 3000!');
 });
