@@ -23,8 +23,7 @@ function getDbFile() {
 function updateDbFile(data) {
   let fileExists = fs.existsSync(DB_FILE_PATH);
 
-  if(!fileExists)
-  {
+  if (!fileExists) {
     fs.writeFileSync(DB_FILE_PATH, JSON.stringify({
       state: data.state || 'off',
       turnOnTime: data.turnOnTime || null,
@@ -57,8 +56,29 @@ app.post('/lights', function (req, res) {
       .send(error);
   }
 
-  return res.status(200)
-  .send("Hello World!")
+  return res.status(200);
+});
+
+app.post('/lights/toggle', function (req, res) {
+  try {
+    let oldState = getDbFile().state;
+
+    switch (oldState) {
+      case 'off':
+        updateDbFile({ state: 'full' })
+        break;
+      case 'half':
+      case 'full':
+        updateDbFile({ state: 'off' })
+        break;
+    }
+  }
+  catch (error) {
+    return res.status(500)
+      .send(error);
+  }
+
+  return res.status(200);
 });
 
 app.get('/lights', function (req, res) {
@@ -67,7 +87,7 @@ app.get('/lights', function (req, res) {
   try {
     let file = getDbFile();
     return res.status(200)
-              .json(file)
+      .json(file)
   }
   catch (error) {
     return res.status(500)

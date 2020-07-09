@@ -1,4 +1,4 @@
 git fetch
 git pull
-pm2 stop 'BedroomLightsAPI'
-pm2 start 'node server.js' --name 'BedroomLightsAPI'
+pm2 stop 'bedroom-lights-api'
+pm2 start 'node server.js' --name 'bedroom-lights-api'
