@@ -5,7 +5,7 @@ var fs = require('fs');
 var moment = require('moment');
 
 var app = express();
-const DB_FILE_PATH = './lightsState.json';
+const DB_FILE_PATH = './db/state.json';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
