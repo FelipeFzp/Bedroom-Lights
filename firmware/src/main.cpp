@@ -60,26 +60,26 @@ void getData()
         if (response == "\"full\"")
         {
           Serial.println("Totalmente ligada");
-          setLights(1, 1);
+          setLights(true, true);
         }
         else if (response == "\"side\"")
         {
           Serial.println("Laterais ligadas");
-          setLights(0, 1);
+          setLights(false, true);
         }
         else if (response == "\"center\"")
         {
           Serial.println("Cetral ligada");
-          setLights(1, 0);
+          setLights(true, false);
         }
         else if (response == "\"off\"")
         {
           Serial.println("Desligado");
-          setLights(0, 0);
+          setLights(false, false);
         }
         else {
           Serial.println("ERRO: Estado Desconhecido !!!" + String(response));
-          setLights(0, 0);
+          setLights(false, false);
         }
       }
       
