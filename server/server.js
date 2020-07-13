@@ -19,9 +19,12 @@ app.use(function (req, res, next) {
 
 // Database File Methods
 function getDbFile() {
-  let fileData = fs.readFileSync(DB_FILE_PATH).toString();
-  let file = JSON.parse(fileData);
-  return file;
+  if (fs.existsSync(DB_FILE_PATH)) {
+    let fileData = fs.readFileSync(DB_FILE_PATH).toString();
+    let file = JSON.parse(fileData);
+    return file;
+  }
+  else return null;
 }
 
 function updateDbFile(data) {
@@ -29,7 +32,10 @@ function updateDbFile(data) {
 
   if (!fileExists) {
     fs.writeFileSync(DB_FILE_PATH, JSON.stringify({
-      state: data.state || 'off',
+      state: {
+        centerLight: data.state.centerLight || false,
+        sideLight: data.state.sideLight || false
+      },
       turnOnTime: data.turnOnTime || null,
       daysOfWeek: data.daysOfWeek || ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB', 'DOM']
     }))
@@ -37,7 +43,10 @@ function updateDbFile(data) {
   else {
     let file = getDbFile();
 
-    file.state = data.state || file.state;
+    file.state = {
+      centerLight: data.state.centerLight != undefined ? data.state.centerLight : file.state.centerLight,
+      sideLight: data.state.sideLight != undefined ? data.state.sideLight : file.state.sideLight
+    }
     file.turnOnTime = data.turnOnTime || file.turnOnTime;
     file.daysOfWeek = data.daysOfWeek || file.daysOfWeek;
 
@@ -47,11 +56,14 @@ function updateDbFile(data) {
 
 // Endpoints
 app.post('/lights', function (req, res) {
-  const { state, daysOfWeek, turnOnTime } = req.body;
+  const { centerLight, sideLight, daysOfWeek, turnOnTime } = req.body;
 
   try {
     updateDbFile({
-      state: state,
+      state: {
+        centerLight: centerLight,
+        sideLight: sideLight
+      },
       daysOfWeek: daysOfWeek,
       turnOnTime: turnOnTime
     })
@@ -103,7 +115,21 @@ app.get('/lights', function (req, res) {
 
 app.get('/lights/state', function (req, res) {
   try {
-    let state = getDbFile().state;
+    let file = getDbFile().state;
+    let state = "default";
+
+    if (file.centerLight)
+      state = "center";
+
+    if (file.sideLight)
+      state = "half";
+
+    if (file.centerLight && file.sideLight)
+      state = "full";
+
+    if (!file.centerLight && !file.sideLight)
+      state = "off";
+
     return res.status(200)
       .json(state)
   }
@@ -118,12 +144,13 @@ cron.schedule('* * * * *', () => {
   try {
     const momentDate = moment().tz('America/Sao_Paulo').locale('pt');
     const dayOfWeek = momentDate.format('ddd').toUpperCase();
-    const time = momentDate.format('HH:mm');  
-    
+    const time = momentDate.format('HH:mm');
+
     const file = getDbFile();
     if (file && file.daysOfWeek && file.turnOnTime) {
       if (file.daysOfWeek.find(d => d == dayOfWeek) && file.turnOnTime == time) {
-        file.state = 'full';
+        file.state.centerLight = true;
+        file.state.sideLight = true;
         updateDbFile(file);
       }
     }
