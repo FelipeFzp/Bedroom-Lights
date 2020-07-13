@@ -1,16 +1,20 @@
 #include <Arduino.h>
 #include <../lib/Helpers/WifiHelper/WiFiHelper.h>
 
-#define PIN_LED_WIFI_STATUS D0
+#define PIN_LED_WIFI_STATUS D4
+#define PIN_RELAY_CENTER_LIGHTS D1
+#define PIN_RELAY_SIDE_LIGHTS D2
 
 const String urlApi = "http://bedroomlights.toikos.com.br";
-const String deviceId = "66574";
 
 void getData();
+void setLights(bool, bool);
 
 void setup()
 {
   pinMode(PIN_LED_WIFI_STATUS, OUTPUT);
+  pinMode(PIN_RELAY_CENTER_LIGHTS, OUTPUT);
+  pinMode(PIN_RELAY_SIDE_LIGHTS, OUTPUT);
 
   WiFiHelper::initWiFiApSta("Felipe's Bedroom", "12345678");
   WiFiHelper::connectOnWifi("Eletronica Lider 2.4GHz", "332290938");
@@ -22,15 +26,11 @@ void loop()
 {
   WiFiHelper::serverHandleClient();
 
-  if (WiFiHelper::wiFiIsConnected())
-    digitalWrite(PIN_LED_WIFI_STATUS, HIGH);
-  else
-    digitalWrite(PIN_LED_WIFI_STATUS, LOW);
-
   if (millis() % 1000 == 0)
   {
-    Serial.println("1 Seg");
+    digitalWrite(PIN_LED_WIFI_STATUS, HIGH);
     getData();
+    digitalWrite(PIN_LED_WIFI_STATUS, LOW);
   }
 }
 
@@ -58,14 +58,31 @@ void getData()
       if (httpCode == 200)
       {
         if (response == "\"full\"")
+        {
           Serial.println("Totalmente ligada");
-
-        if (response == "\"half\"")
+          setLights(1, 1);
+        }
+        else if (response == "\"side\"")
+        {
           Serial.println("Laterais ligadas");
-
-        if (response == "\"off\"")
+          setLights(0, 1);
+        }
+        else if (response == "\"center\"")
+        {
+          Serial.println("Laterais ligadas");
+          setLights(1, 0);
+        }
+        else if (response == "\"off\"")
+        {
           Serial.println("Desligado");
+          setLights(0, 0);
+        }
+        else {
+          Serial.println("ERRO: Estado Desconhecido !!!" + String(response));
+          setLights(0, 0);
+        }
       }
+      
     }
     else
     {
@@ -78,4 +95,10 @@ void getData()
   {
     Serial.println("Wifi Not connected");
   }
+}
+
+void setLights(bool centerLight, bool sideLight)
+{
+  digitalWrite(PIN_RELAY_CENTER_LIGHTS, centerLight);
+  digitalWrite(PIN_RELAY_SIDE_LIGHTS, sideLight);
 }
