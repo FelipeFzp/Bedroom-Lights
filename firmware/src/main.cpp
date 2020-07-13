@@ -38,7 +38,7 @@ void getData()
 {
   if (WiFiHelper::wiFiIsConnected())
   {
-    String url = urlApi + "/lights";
+    String url = urlApi + "/lights/state";
 
     http.begin(url);
 
@@ -49,17 +49,23 @@ void getData()
     int httpCode = http.GET();
     if (httpCode > 0)
     {
-
-      Serial.println("[HTTP] GET " + String(httpCode));
+      Serial.println("[HTTP] GET State: " + String(httpCode));
       String response = http.getString();
 
       Serial.println(response);
       Serial.flush();
 
-      // if (httpCode == 200)
-      // {
-      //   Serial.println(response);
-      // }
+      if (httpCode == 200)
+      {
+        if (response == "\"full\"")
+          Serial.println("Totalmente ligada");
+
+        if (response == "\"half\"")
+          Serial.println("Laterais ligadas");
+
+        if (response == "\"off\"")
+          Serial.println("Desligado");
+      }
     }
     else
     {
