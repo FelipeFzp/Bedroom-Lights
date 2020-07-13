@@ -101,9 +101,16 @@ app.get('/lights', function (req, res) {
   }
 });
 
-app.get('/test', function (req, res) {
-
-
+app.get('/lights/state', function (req, res) {
+  try {
+    let state = getDbFile().state;
+    return res.status(200)
+      .json(state)
+  }
+  catch (error) {
+    return res.status(500)
+      .send(error);
+  }
 });
 
 // Crons
