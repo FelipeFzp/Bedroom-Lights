@@ -83,11 +83,12 @@ app.post('/lights/toggle', function (req, res) {
 
     switch (oldState) {
       case 'off':
-        updateDbFile({ state: 'full' })
+        updateDbFile({ centerLight: true, sideLight: true })
         break;
-      case 'half':
+      case 'center':
+      case 'side':
       case 'full':
-        updateDbFile({ state: 'off' })
+        updateDbFile({ centerLight: false, sideLight: false })
         break;
     }
   }
