@@ -69,7 +69,7 @@ void getData()
         }
         else if (response == "\"center\"")
         {
-          Serial.println("Laterais ligadas");
+          Serial.println("Cetral ligada");
           setLights(1, 0);
         }
         else if (response == "\"off\"")
