@@ -117,7 +117,7 @@ app.get('/lights/state', function (req, res) {
       state = "center";
 
     if (file.sideLight)
-      state = "half";
+      state = "side";
 
     if (file.centerLight && file.sideLight)
       state = "full";
