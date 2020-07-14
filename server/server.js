@@ -111,19 +111,7 @@ app.get('/lights', function (req, res) {
 app.get('/lights/state', function (req, res) {
   try {
     let file = getDbFile().state;
-    let state = "default";
-
-    if (file.centerLight)
-      state = "center";
-
-    if (file.sideLight)
-      state = "side";
-
-    if (file.centerLight && file.sideLight)
-      state = "full";
-
-    if (!file.centerLight && !file.sideLight)
-      state = "off";
+    let state = `C:${file.centerLight};S:${file.sideLight}`;
 
     return res.status(200)
       .json(state)
