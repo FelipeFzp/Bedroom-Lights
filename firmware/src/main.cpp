@@ -9,6 +9,7 @@ const String urlApi = "http://bedroomlights.toikos.com.br";
 
 void getData();
 void setLights(bool, bool);
+String splitString(String data, char separator, int index);
 
 void setup()
 {
@@ -57,32 +58,14 @@ void getData()
 
       if (httpCode == 200)
       {
-        if (response == "\"full\"")
-        {
-          Serial.println("Totalmente ligada");
-          setLights(true, true);
-        }
-        else if (response == "\"side\"")
-        {
-          Serial.println("Laterais ligadas");
-          setLights(false, true);
-        }
-        else if (response == "\"center\"")
-        {
-          Serial.println("Cetral ligada");
-          setLights(true, false);
-        }
-        else if (response == "\"off\"")
-        {
-          Serial.println("Desligado");
-          setLights(false, false);
-        }
-        else {
-          Serial.println("ERRO: Estado Desconhecido !!!" + String(response));
-          setLights(false, false);
-        }
+        String centerLightExp = splitString(response, ';', 0);
+        String sideLightExp = splitString(response, ';', 1);
+        String centerLightValue = splitString(centerLightExp, ':', 1);
+        String sideLightValue = splitString(sideLightExp, ':', 1);
+        centerLightValue.replace("\"", "");
+        sideLightValue.replace("\"", "");
+        setLights(centerLightValue == "true", sideLightValue == "true");
       }
-      
     }
     else
     {
@@ -101,4 +84,22 @@ void setLights(bool centerLight, bool sideLight)
 {
   digitalWrite(PIN_RELAY_CENTER_LIGHTS, centerLight);
   digitalWrite(PIN_RELAY_SIDE_LIGHTS, sideLight);
+}
+
+String splitString(String data, char separator, int index = 0)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length();
+
+  for (int i = 0; i <= maxIndex && found <= index; i++)
+  {
+    if (data.charAt(i) == separator || i == maxIndex)
+    {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+    }
+  }
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
