@@ -81,10 +81,12 @@ app.post('/lights/toggle', function (req, res) {
   try {
     let oldState = getDbFile().state;
 
-    if (oldState.centerLight || oldState.sideLight)
-      updateDbFile({ state: { centerLight: false, sideLight: false } })
-    else
-      updateDbFile({ state: { centerLight: true, sideLight: true } })
+    updateDbFile({
+      state: {
+        centerLight: !oldState.state.centerLight,
+        sideLight: !oldState.state.sideLight
+      }
+    });
   }
   catch (error) {
     return res.status(500)
@@ -132,9 +134,12 @@ cron.schedule('* * * * *', () => {
     const file = getDbFile();
     if (file && file.daysOfWeek && file.turnOnTime) {
       if (file.daysOfWeek.find(d => d == dayOfWeek) && file.turnOnTime == time) {
-        file.state.centerLight = true;
-        file.state.sideLight = true;
-        updateDbFile(file);
+        updateDbFile({
+          state: {
+            centerLight: !file.state.centerLight,
+            sideLight: !file.state.sideLight
+          }
+        })
       }
     }
   }
