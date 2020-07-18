@@ -42,7 +42,7 @@ function updateDbFile(data) {
         sideLight: data.state.sideLight || false
       },
       turnOnTime: data.turnOnTime || null,
-      daysOfWeek: data.daysOfWeek || ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB', 'DOM']
+      daysOfWeek: data.daysOfWeek || ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB', 'DOM']
     }))
   }
   else {
