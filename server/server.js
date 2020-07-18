@@ -83,8 +83,8 @@ app.post('/lights/toggle', function (req, res) {
 
     updateDbFile({
       state: {
-        centerLight: !oldState.state.centerLight,
-        sideLight: !oldState.state.sideLight
+        centerLight: !oldState.centerLight,
+        sideLight: !oldState.sideLight
       }
     });
   }
