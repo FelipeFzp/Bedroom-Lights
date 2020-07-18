@@ -24,7 +24,12 @@ function getDbFile() {
     let file = JSON.parse(fileData);
     return file;
   }
-  else return null;
+  else {
+    updateDbFile();
+    let fileData = fs.readFileSync(DB_FILE_PATH).toString();
+    let file = JSON.parse(fileData);
+    return file;
+  }
 }
 
 function updateDbFile(data) {
