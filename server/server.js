@@ -38,11 +38,11 @@ function updateDbFile(data) {
   if (!fileExists) {
     fs.writeFileSync(DB_FILE_PATH, JSON.stringify({
       state: {
-        centerLight: data.state.centerLight || false,
-        sideLight: data.state.sideLight || false
+        centerLight: data && data.state ? data.state.centerLight : false,
+        sideLight: data && data.state ? data.state.sideLight : false
       },
-      turnOnTime: data.turnOnTime || null,
-      daysOfWeek: data.daysOfWeek || ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB', 'DOM']
+      turnOnTime: data ? data.turnOnTime : null,
+      daysOfWeek: data ? data.daysOfWeek : ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB', 'DOM']
     }))
   }
   else {
