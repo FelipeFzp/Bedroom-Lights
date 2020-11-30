@@ -16,6 +16,7 @@ void setup()
   pinMode(PIN_LED_WIFI_STATUS, OUTPUT);
   pinMode(PIN_RELAY_CENTER_LIGHTS, OUTPUT);
   pinMode(PIN_RELAY_SIDE_LIGHTS, OUTPUT);
+  digitalWrite(PIN_LED_WIFI_STATUS, LOW);
 
   WiFiHelper::initWiFiApSta("Felipe's Bedroom", "12345678");
   WiFiHelper::connectOnWifi("Eletronica Lider 2.4GHz", "332290938");
@@ -29,9 +30,7 @@ void loop()
 
   if (millis() % 1000 == 0)
   {
-    digitalWrite(PIN_LED_WIFI_STATUS, HIGH);
     getData();
-    digitalWrite(PIN_LED_WIFI_STATUS, LOW);
   }
 }
 
@@ -39,6 +38,7 @@ void getData()
 {
   if (WiFiHelper::wiFiIsConnected())
   {
+    digitalWrite(PIN_LED_WIFI_STATUS, HIGH);
     String url = urlApi + "/lights/state";
 
     http.begin(url);
@@ -66,6 +66,7 @@ void getData()
         sideLightValue.replace("\"", "");
         setLights(centerLightValue == "true", sideLightValue == "true");
       }
+      digitalWrite(PIN_LED_WIFI_STATUS, LOW);
     }
     else
     {
@@ -77,6 +78,7 @@ void getData()
   else
   {
     Serial.println("Wifi Not connected");
+    WiFiHelper::connectOnWifi("Eletronica Lider 2.4GHz", "332290938");
   }
 }
 
