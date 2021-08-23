@@ -18,10 +18,11 @@ void setup()
   pinMode(PIN_RELAY_SIDE_LIGHTS, OUTPUT);
   digitalWrite(PIN_LED_WIFI_STATUS, LOW);
 
-  WiFiHelper::initWiFiApSta("Felipe's Bedroom", "12345678");
-  WiFiHelper::connectOnWifi("Eletronica Lider 2.4GHz", "332290938");
+  // WiFiHelper::initWiFiApSta("Felipe's Bedroom", "12345678");
+  WiFiHelper::connectOnWifi("Eletronica Lider 2G", "1112131415");
 
   Serial.begin(115200);
+  Serial.println("Setup");
 }
 
 void loop()
@@ -41,7 +42,7 @@ void getData()
     digitalWrite(PIN_LED_WIFI_STATUS, HIGH);
     String url = urlApi + "/lights/state";
 
-    http.begin(url);
+    http.begin(wifiClient, url);
 
     Serial.println("[HTTP] Http begin in " + url);
 

@@ -7,6 +7,7 @@
 #include "ESP8266WebServer.h"
 #include "ESP8266HTTPClient.h"
 #include "ESP8266WiFiMulti.h"
+#include "WifiClient.h"
 
 #include "./wifi-connect.html.h"
 
@@ -15,6 +16,7 @@
 ESP8266WebServer server(80);
 ESP8266WiFiMulti wiFiMulti;
 HTTPClient http;
+WiFiClient wifiClient;
 
 class WiFiHelper
 {
@@ -22,25 +24,25 @@ class WiFiHelper
 public:
     static void setWiFiConnectionRoutes(std::function<void()> onConnect)
     {
-        server.on("/", HTTP_GET, []() {
-            server.send(200, "text/html", pageWiFiConnect);
-        });
+        server.on("/", HTTP_GET, []()
+                  { server.send(200, "text/html", pageWiFiConnect); });
 
-        server.on("/set-wifi", HTTP_POST, [onConnect]() {
-            String ssid = server.arg("ssid");
-            String password = server.arg("password");
+        server.on("/set-wifi", HTTP_POST, [onConnect]()
+                  {
+                      String ssid = server.arg("ssid");
+                      String password = server.arg("password");
 
-            Serial.println(ssid + ";" + password);
+                      Serial.println(ssid + ";" + password);
 
-            String result = connectOnWifi(ssid, password);
+                      String result = connectOnWifi(ssid, password);
 
-            if (result != WIFI_NOT_CONNECTED)
-            {
-                onConnect();
-            }
+                      if (result != WIFI_NOT_CONNECTED)
+                      {
+                          onConnect();
+                      }
 
-            server.send(200, "text/plain", result.c_str());
-        });
+                      server.send(200, "text/plain", result.c_str());
+                  });
     }
 
     static void initWiFiApSta(String ssid)
