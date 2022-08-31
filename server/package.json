@@ -5,7 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.17.1",
-    "moment-timezone": "^0.5.31",
+    "moment-timezone": "^0.5.35",
     "node-cron": "^2.0.3"
   },
   "devDependencies": {},
