@@ -4,7 +4,7 @@
   "description": "App to toggle Felipe's Bedroom Lights",
   "main": "server.js",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "moment-timezone": "^0.5.31",
     "node-cron": "^2.0.3"
   },
